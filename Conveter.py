@@ -9,18 +9,29 @@ from pathlib import Path
 import time
 import random
 from datetime import datetime
+import argparse
 
 
-datasetpath = "C:\\Users\\willi\\Documents\\TrainingDataset"
+# Construct an argument parser
+all_args = argparse.ArgumentParser()
+
+# Add arguments to the parser
+all_args.add_argument("-exportDatasetPath", "--exportDatasetPath", required=True)
+all_args.add_argument("-datasetVideoPath", "--datasetVideoPath", required=True)
+all_args.add_argument("-modelExportPath", "--modelExportPath", required=True)
+args = vars(all_args.parse_args())
+
+
+datasetExportPath = args['exportDatasetPath']
 
 def videoToPictures(videopath, exportpath):
   vidcap = cv2.VideoCapture(videopath)
   success,image = vidcap.read()
   count = 0
 
-  datasetpath = Path(exportpath).parent
+  datasetExportPath = Path(exportpath).parent
 
-  print(datasetpath)
+  print(datasetExportPath)
 
   p = pathlib.Path(exportpath)
   p.mkdir(parents=True, exist_ok=True)
@@ -35,33 +46,33 @@ def videoToPictures(videopath, exportpath):
     print('Read a new frame: ', success, exportpath)
     count += 1
 
-  
+def trainModel(modelExportPath, datasetExportPath):
+  print("dataset: " + datasetExportPath)
+  print(datasetExportPath)
 
-datasetVideoPath = 'C:\\Users\\willi\\Documents\\videos'
+  print(os.path.exists(datasetExportPath))
+
+  # Load input data specific to an on-device ML app.
+  data = DataLoader.from_folder(datasetExportPath)
+  train_data, test_data = data.split(0.9)
+
+  # Customize the TensorFlow model.
+  model = image_classifier.create(train_data, epochs=100)
+
+  # Evaluate the model.
+  loss, accuracy, = model.evaluate(test_data)
+
+  # Export to Tensorflow Lite model and label file in `export_dir`.
+  model.export(export_dir=modelExportPath)
+
+datasetVideoPath = args['datasetVideoPath']
 
 
 for file in pathlib.Path(datasetVideoPath).iterdir():
   for file2 in file.iterdir():
-    videoToPictures(os.path.abspath(file2), "C:\\Users\\willi\\Documents\\TrainingDataset\\%s\\" % file.name)
+    videoToPictures(os.path.abspath(file2), datasetExportPath + file.name)
 
 
-datasetpathexport = "C:\\Users\\willi\\Documents\\modelExport"
+modelExportPath = args['modelExportPath']
 
-
-print("dataset: " + datasetpath)
-print(datasetpath)
-
-print(os.path.exists(datasetpath))
-
-# Load input data specific to an on-device ML app.
-data = DataLoader.from_folder(datasetpath)
-train_data, test_data = data.split(0.9)
-
-# Customize the TensorFlow model.
-model = image_classifier.create(train_data, epochs=100)
-
-# Evaluate the model.
-loss, accuracy, = model.evaluate(test_data)
-
-# Export to Tensorflow Lite model and label file in `export_dir`.
-model.export(export_dir=datasetpathexport)
+trainModel(modelExportPath,datasetExportPath)
