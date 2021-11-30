@@ -2,7 +2,7 @@
 
 This is a basic script to train an image classification model easily.
 
-	![img-here](docs/images/filestructuretflite.png)
+	![filestructuretfite](https://github.com/robosapien-s/TensorflowTrainingScript/blob/main/docs/images/filestructuretflite.png?raw=true)
 
 Run this:
 
