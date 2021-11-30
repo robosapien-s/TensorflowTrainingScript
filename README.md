@@ -2,7 +2,7 @@
 
 This is a basic script to train an image classification model easily.
 
-	![img-here](doc/images/filestructuretflite.png)
+	![img-here](docs/images/filestructuretflite.png)
 
 Run this:
 
